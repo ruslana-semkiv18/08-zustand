@@ -14,16 +14,16 @@ import NoteList from "@/components/NoteList/NoteList";
 import css from "./Notes.module.css";
 
 interface NotesClientProps {
-  initialTag?: string;
+  tag?: string;
 }
 
-export default function NotesClient({ initialTag }: NotesClientProps) {
+export default function NotesClient({ tag }: NotesClientProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["notes", searchQuery, currentPage, initialTag],
-    queryFn: () => fetchNotes(searchQuery, currentPage, 12, initialTag),
+    queryKey: ["notes", searchQuery, currentPage, tag],
+    queryFn: () => fetchNotes(searchQuery, currentPage, 12, tag),
     placeholderData: keepPreviousData,
   });
 
@@ -46,10 +46,10 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
   }, [data, searchQuery]);
 
   useEffect(() => {
-    if (data && data.notes.length === 0 && initialTag) {
+    if (data && data.notes.length === 0 && tag) {
       toast.error("No notes found for this tag.");
     }
-  }, [data, initialTag]);
+  }, [data, tag]);
 
   return (
     <div className={css.app}>
@@ -74,6 +74,7 @@ export default function NotesClient({ initialTag }: NotesClientProps) {
         {!isLoading && !isError && notes.length > 0 && (
           <NoteList notes={notes} />
         )}
+        {!isLoading && !isError && notes.length === 0 && <p>No notes yet</p>}
       </div>
     </div>
   );
